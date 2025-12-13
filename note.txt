@@ -1,0 +1,53 @@
+>>>Basic Setup<<<<
+    npm create vite
+        project name > react > typescript >
+        (if node_modules is created, then "npm i" not nedded.)
+
+    *** then I need: ShadCN, react router dom, react hook form.
+        cd/file directory
+    npm i react-router react-hook-form
+
+    ***(for more setup like indx.css, tsconfig.json, tsconfig.app.json, , go: https://ui.shadcn.com/docs/installation/vite)
+    npm install tailwindcss @tailwindcss/vite 
+        (delete src/app.css, because we use tailwind css)
+        (delete src/index.css all lines, and pest: @import "tailwindcss";)
+
+    npm install -D @types/node (it's also from ui.shadcn.com)
+        (change the vite.congig.ts file according to ui.shadcn.com)
+    npx shadcn@latest init (shadcn init)
+    ****check the ShadCN by using a button:
+    npx shadcn@latest add button
+        (if you want to run frontend in 3000 server then go vite.config.ts and add:
+             server: {
+                port: 3000,
+             },) after defineConfig
+>>>Basic Setup<<<<
+
+>>> router setup: <<<
+    src/routes/index.tsx
+        https://reactrouter.com/start/data/installation
+    call 
+        <RouterProvider router={router}></RouterProvider>
+     in main.tsx
+>>> create pages folder and create public pages: About.tsx, Contact.tsx, Home.tsx
+>>> set page route in routes/index.tsx
+        {
+            // element: <App />,
+            Component: App,
+            path: '/',    
+            children: [
+                {
+                Component: About,
+                path: 'about',
+                },        
+            ]    
+        }
+
+>>> set outlet to showing the pages:
+            <div className="flex min-h-svh flex-col items-center justify-center">
+                <Button>Click me</Button>
+                <Outlet></Outlet>
+            </div>
+
+>>> asdfwe
+
