@@ -49,5 +49,10 @@
                 <Outlet></Outlet>
             </div>
 
->>> asdfwe
+>>> create layout/CommomLayout.tsx (for commom pages for all visitors)
+>>> set App.tsx 
+            <CommonLayout>
+                <Outlet></Outlet>
+            </CommonLayout>
+
 
