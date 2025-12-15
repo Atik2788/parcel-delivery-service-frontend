@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { ModeToggle } from "./ModeToggler";
 import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, type TypedUseSelectorHook } from "react-redux";
 import type { RootState } from "@/app/store";
 import { logOut } from "@/features/auth/authSlice";
 
@@ -20,12 +20,16 @@ import { logOut } from "@/features/auth/authSlice";
 const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
+  
+  // typed selector
+  const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
 
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.user);
+const user = useTypedSelector((state) => state.auth.user);
   console.log(user)
   
 
@@ -95,7 +99,7 @@ export default function Navbar() {
             <>
               <span className="text-sm font-medium text-muted-foreground p-2 rounded-md">{user.name}</span>
               <Button onClick={handleLogout} className="text-sm">
-                Logout
+                LogOut
               </Button>
             </>
           ) : (
