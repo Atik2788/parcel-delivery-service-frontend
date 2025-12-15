@@ -1,27 +1,32 @@
 >>>Basic Setup<<<<
-    npm create vite
+    ### npm create vite
         project name > react > typescript >
         (if node_modules is created, then "npm i" not nedded.)
 
     *** then I need: ShadCN, react router dom, react hook form.
         cd/file directory
-    npm i react-router react-hook-form
+    ### npm i react-router react-hook-form
 
     ***(for more setup like indx.css, tsconfig.json, tsconfig.app.json, , go: https://ui.shadcn.com/docs/installation/vite)
-    npm install tailwindcss @tailwindcss/vite 
+    ### npm install tailwindcss @tailwindcss/vite 
         (delete src/app.css, because we use tailwind css)
         (delete src/index.css all lines, and pest: @import "tailwindcss";)
 
-    npm install -D @types/node (it's also from ui.shadcn.com)
+    ### npm install -D @types/node (it's also from ui.shadcn.com)
         (change the vite.congig.ts file according to ui.shadcn.com)
-    npx shadcn@latest init (shadcn init)
+
+    ### npx shadcn@latest init (shadcn init)
     ****check the ShadCN by using a button:
-    npx shadcn@latest add button
+
+    ### npx shadcn@latest add button
         (if you want to run frontend in 3000 server then go vite.config.ts and add:
              server: {
                 port: 3000,
              },) after defineConfig
+
 >>>Basic Setup<<<<
+
+
 
 >>> router setup: <<<
     src/routes/index.tsx
@@ -29,6 +34,7 @@
     call 
         <RouterProvider router={router}></RouterProvider>
      in main.tsx
+
 >>> create pages folder and create public pages: About.tsx, Contact.tsx, Home.tsx
 >>> set page route in routes/index.tsx
         {
@@ -55,4 +61,77 @@
                 <Outlet></Outlet>
             </CommonLayout>
 
+
+************  File Structure  ****************
+    src/
+    │
+    ├── app/                 # Redux store & RTK setup
+    │   ├── store.ts
+    │   └── hooks.ts
+    │
+    ├── features/            # Feature-based architecture
+    │   ├── auth/
+    │   │   ├── authSlice.ts
+    │   │   ├── authApi.ts
+    │   │   └── types.ts
+    │   │
+    │   ├── parcel/
+    │   │   ├── parcelApi.ts
+    │   │   ├── parcelSlice.ts
+    │   │   └── components/
+    │   │
+    │   ├── user/
+    │   │   └── userApi.ts
+    │
+    ├── components/
+    │   ├── ui/              # shadcn / reusable UI
+    │   ├── common/          # Button, Loader, Pagination
+    │
+    ├── layout/
+    │   ├── CommonLayout.tsx
+    │   ├── DashboardLayout.tsx
+    │
+    ├── pages/
+    │   ├── public/
+    │   │   ├── Home.tsx
+    │   │   ├── About.tsx
+    │   │   └── Contact.tsx
+    │   │
+    │   ├── auth/
+    │   │   ├── Login.tsx
+    │   │   └── Register.tsx
+    │   │
+    │   ├── dashboard/
+    │   │   ├── sender/
+    │   │   ├── receiver/
+    │   │   └── admin/
+    │
+    ├── routes/
+    │   └── index.tsx
+    │
+    ├── utils/
+    │   ├── constants.ts
+    │   └── helpers.ts
+    │
+    ├── App.tsx
+    ├── main.tsx
+    └── index.css
+
+
+
+>>> npm install @reduxjs/toolkit react-redux  (Redux Toolkit + RTK Query setup)
+>>> src/app/store.ts
+
+>>> main.tsx >   set:  <Provider store={store}>
+            <StrictMode>
+                <Provider store={store}>
+                    <RouterProvider uterProvider router={router}></RouterProvider>
+                </Provider>
+            </StrictMode>,
+
+>>> src/features/api/baseApi.ts
+>>> src/features/auth/authSlice.ts
+>>> src/features/auth/authApi.ts
+>>> src/app/store.ts
+>>> 
 
