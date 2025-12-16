@@ -72,7 +72,7 @@ const user = useTypedSelector((state) => state.auth.user);
           {/* Main nav */}
           <div className="flex items-center gap-6">
             <a href="#" className="text-primary hover:text-primary/90">
-              Parcell D.
+              <Link to="/">Parcel Delivery</Link>
             </a>
             <NavigationMenu className="max-md:hidden">
               <NavigationMenuList className="gap-2">
@@ -93,21 +93,44 @@ const user = useTypedSelector((state) => state.auth.user);
 
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <ModeToggle />
-          
-          {user ? (
-            <>
-              <span className="text-sm font-medium text-muted-foreground p-2 rounded-md">{user.name}</span>
-              <Button onClick={handleLogout} className="text-sm">
-                LogOut
-              </Button>
-            </>
-          ) : (
-            <Button asChild className="text-sm">
-              <Link to="/login">Login</Link>
-            </Button>
-          )}
-        </div>
+
+
+  {user ? (
+    <>
+      <span className="text-sm font-medium text-muted-foreground p-2 rounded-md">
+        {user.name}
+      </span>
+
+      {/* Role-based Dashboard Link */}
+      
+        <Link
+        className="text-sm "
+          to={
+            user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+              ? "/dashboard/admin"
+              : user.role === "SENDER"
+              ? "/dashboard/sender"
+              : user.role === "RECEIVER"
+              ? "/dashboard/receiver"
+              : "/dashboard" // fallback
+          }
+        >
+          Dashboard
+        </Link>
+
+      <ModeToggle />
+
+      <Button onClick={handleLogout} className="text-sm">
+        LogOut
+      </Button>
+    </>
+  ) : (
+    <Button asChild className="text-sm">
+      <Link to="/login">Login</Link>
+    </Button>
+  )}
+</div>
+
       </div>
     </header>
   );

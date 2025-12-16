@@ -99,9 +99,6 @@ const Contact = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-muted text-muted-foreground py-6 text-center">
-        <p>© 2025 ParcelPro Delivery. All rights reserved.</p>
-      </footer>
 
       {/* Inline Keyframes */}
       <style>{`
