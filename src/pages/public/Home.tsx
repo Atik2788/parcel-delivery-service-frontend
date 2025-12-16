@@ -40,18 +40,13 @@ const user = useTypedSelector((state) => state.auth.user);
       </section>
 
       {/* Call to Action */}
-      <section className="bg-[#07a39b] text-primary-foreground py-12 text-center">
+      <section className=" text-primary-foreground py-12 text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to send your parcel?</h2>
         <p className="mb-6">Join thousands of happy customers today.</p>
         <button className="bg-secondary text-secondary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-secondary/80 transition">
           Get Started
         </button>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-muted text-muted-foreground py-6 text-center">
-        <p>© 2025 ParcelPro Delivery. All rights reserved.</p>
-      </footer>
     </div>
   );
 };
