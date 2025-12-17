@@ -7,7 +7,6 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const ParcelService = {
   createParcel(payload: IParcelCreatePayload) {
-    console.log(payload)
     return api.post("/parcels", payload).then(res => res.data);
   },
 

@@ -66,7 +66,6 @@ export const ParcelService = {
       const res = await axios.get(`${API_URL}/my-parcels-sender`,{
          headers: { Authorization: token} }
       );
-      console.log(res.data)
       return res.data || [];
   },
 
