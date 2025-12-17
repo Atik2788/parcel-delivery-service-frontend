@@ -2,11 +2,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/app/store";
-import { ParcelService } from "@/pages/dashboard/sender/parcelService";
 import type { AuthUser } from "@/types/auth";
 import type { Parcel } from "@/types/parcel";
 import { toast } from "sonner";
 import RatingModal from "../sender/RatingModal";
+import { ParcelService } from "./receiverService";
+import ClaimParcelModal from "./ClaimParcelModa";
+import TrackingUpdateModal from "./TrackingUpdateModal";
 
 export const ReceiverDashboard = () => {
   const user = useSelector(
@@ -18,6 +20,17 @@ export const ReceiverDashboard = () => {
 
   const [parcels, setParcels] = useState<Parcel[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimableParcels, setClaimableParcels] = useState<Parcel[]>([]);
+
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [trackingPayload, setTrackingPayload] = useState<{
+    trackingId: string;
+    currentStatus: "IN_TRANSIT" | "DELIVERED";
+  } | null>(null);
+
+
 
   // 🚀 Load parcels on mount
   useEffect(() => {
@@ -38,6 +51,7 @@ export const ReceiverDashboard = () => {
     }
   }, [user]);
 
+
   if (!user) {
     return <p>Please login</p>;
   }
@@ -49,31 +63,71 @@ export const ReceiverDashboard = () => {
     );
   }
 
+
+    const fetchClaimableParcels = async () => {
+        const toastId = toast.loading("Loading claimable parcels...");
+        // setClaimLoading(true);
+      try {
+        const response = await ParcelService.getIncomingParcels();
+        setClaimableParcels(response.data || []);
+        setShowClaimModal(true);
+        toast.success("Claimable parcels loaded ✅", { id: toastId });
+      } catch (err: any) {
+        toast.error(err.message);
+      }
+    };
+
+
+    const openTrackingModal = (
+      trackingId: string,
+      currentStatus: "IN_TRANSIT" | "DELIVERED"
+    ) => {
+      setTrackingPayload({ trackingId, currentStatus });
+      setShowTrackingModal(true);
+    };
+    
   // 🚀 Claim parcel
-  const handleClaim = async (parcelId: string) => {
-    try {
-      await ParcelService.claimParcel(parcelId);
-      setParcels(prev =>
-        prev.map(p => (p._id === parcelId ? { ...p, currentStatus: "DISPATCHED" } : p))
-      );
-      toast.success("Parcel claimed ✅");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
+  // const handleClaim = async (parcelId: string) => {
+  //   try {
+  //     await ParcelService.claimParcel(parcelId);
+  //     setParcels(prev =>
+  //       prev.map(p => (p._id === parcelId ? { ...p, currentStatus: "DISPATCHED" } : p))
+  //     );
+  //     toast.success("Parcel claimed ✅");
+  //   } catch (err: any) {
+  //     toast.error(err.message);
+  //   }
+  // };
 
   // 🚀 Update tracking (receiver side)
- const handleUpdateTracking = async (trackingId: string, status: string) => {
-    try {
-      await ParcelService.updateTrackingReceiver({ trackingId, currentStatus: status });
-      setParcels(prev =>
-        prev.map(p => (p.trackingId === trackingId ? { ...p, currentStatus: status } : p))
-      );
-      toast.success("Tracking updated ✅");
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
+    const handleTrackingSubmit = async (data: {
+      trackingId: string;
+      currentStatus: "IN_TRANSIT" | "DELIVERED";
+      location: string;
+      note: string;
+    }) => {
+      try {
+        await ParcelService.updateTrackingReceiver(data);
+
+        setParcels(prev =>
+          prev.map(p =>
+            p.trackingId === data.trackingId
+              ? { ...p, currentStatus: data.currentStatus }
+              : p
+          )
+        );
+
+        toast.success("Tracking updated ✅");
+      } catch (err: any) {
+        toast.error(
+          err?.response?.data?.message ||
+          "Failed to update tracking"
+        );
+      }
+    };
+
+
+  
 
   // 🚀 Give rating (receiver → sender)
   const handleRatingSubmit = async (rating: number, feedback: string) => {
@@ -90,26 +144,51 @@ export const ReceiverDashboard = () => {
     <div className="bg-chart-3">
       <div className="flex flex-col container mx-auto px-4 py-20 items-center justify-between gap-4">
         <h1 className="text-3xl text-background font-bold mb-4">Receiver Dashboard</h1>
+        <button
+          onClick={async () => {
+            await fetchClaimableParcels();
+          }}
+          className="bg-primary text-background px-4 py-2 rounded self-end"
+        >
+          + Claim Parcel
+        </button>
+
 
         <table className="w-full text-sm border">
           <thead className="bg-muted text-sidebar-foreground">
             <tr>
-              <th className="p-2 text-left">Tracking</th>
-              <th className="p-2 text-left">Sender</th>
-              <th className="p-2 text-left">Addresses</th>
-              <th className="p-2 text-left">Weight</th>
-              <th className="p-2 text-left">Fee</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Actions</th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Sender</div>
+            </th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Addresses</div>
+            </th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Weight</div>
+            </th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Fee</div>
+            </th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Status</div>
+            </th>
+            <th className="p-2 text-left">
+              <div className="flex items-center justify-center h-full">Actions</div>
+            </th>
             </tr>
           </thead>
           <tbody className="text-background">
             {parcels.map(p => (
               <tr key={p._id} className="border-b">
-                <td className="p-2">{p.trackingId}</td>
                 <td className="p-2">
                   {p.sender?.name ? (
-                    <span>{p.sender?.name}, Phone: {p.sender?.deliveryPhone}</span>
+                    <span>{p.sender?.name}, Phone: {p.sender?.deliveryPhone}, 
+                      {p.ratings?.senderToReceiver?.rating ? (
+                        <span className="text-yellow-400 font-semibold"> S.R: {p.ratings?.senderToReceiver?.rating}⭐</span>
+                      ) : (
+                        <span className="text-gray-400"></span>
+                      )}
+                    </span>
                   ) : (
                     <span>N/A</span>
                   )}
@@ -142,41 +221,43 @@ export const ReceiverDashboard = () => {
                 <td className="p-2">৳ {p.fee}</td>
                 <td className="p-2">{p.currentStatus}</td>
                 <td className="p-2 flex gap-2">
-                  {p.currentStatus === "REQUESTED" && (
+
+                {(p.currentStatus === "DELIVERED") && (
+                  p.ratings?.receiverToSender?.rating != null ? (
+                    <span className="font-semibold text-yellow-400">
+                      Your rating: {p.ratings.receiverToSender.rating} ⭐
+                    </span>
+                  ) : (
                     <button
-                      onClick={() => handleClaim(p._id)}
+                      onClick={() => {
+                        setSelectedTrackingId(p.trackingId);
+                        setShowRatingModal(true);
+                      }}
+                      className="bg-green-500 text-white px-2 py-1 rounded"
+                    >
+                      Rate
+                    </button>
+                  )
+                )}
+
+                  {p.currentStatus === "DISPATCHED" && (
+                    <button
+                      onClick={() => openTrackingModal(p.trackingId, "IN_TRANSIT")}
                       className="bg-blue-500 text-white px-2 py-1 rounded"
                     >
-                      Claim
+                      Mark In Transit
                     </button>
                   )}
 
-                  {p.currentStatus === "DELIVERED" && (
-                    p.ratings?.receiverToSender?.rating != null ? (
-                      <span className="font-semibold text-green-400">
-                        {p.ratings.receiverToSender.rating} ⭐
-                      </span>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setSelectedTrackingId(p.trackingId);
-                          setShowRatingModal(true);
-                        }}
-                        className="bg-green-500 text-white px-2 py-1 rounded"
-                      >
-                        Rate Sender
-                      </button>
-                    )
-                  )}
-
-                  {["DISPATCHED", "IN_TRANSIT"].includes(p.currentStatus) && (
+                  {p.currentStatus === "IN_TRANSIT" && (
                     <button
-                      onClick={() => handleUpdateTracking(p.trackingId, "DELIVERED")}
+                      onClick={() => openTrackingModal(p.trackingId, "DELIVERED")}
                       className="bg-purple-500 text-white px-2 py-1 rounded"
                     >
                       Mark Delivered
                     </button>
                   )}
+
                 </td>
               </tr>
             ))}
@@ -188,6 +269,25 @@ export const ReceiverDashboard = () => {
           onClose={() => setShowRatingModal(false)}
           onSubmit={handleRatingSubmit}
         />
+
+        <ClaimParcelModal
+          open={showClaimModal}
+          onClose={() => setShowClaimModal(false)}
+          user={user}
+          claimableParcels={claimableParcels}
+          setParcels={setParcels}
+        />
+
+
+        <TrackingUpdateModal
+        open={showTrackingModal}
+        onClose={() => setShowTrackingModal(false)}
+        payload={trackingPayload}
+        onSubmit={handleTrackingSubmit}
+      />
+
+
+
       </div>
     </div>
   );

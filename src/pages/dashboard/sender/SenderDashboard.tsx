@@ -25,7 +25,6 @@ const [selectedTrackingId, setSelectedTrackingId] = useState<string | null>(null
 
 
   const [parcels, setParcels] = useState<Parcel[]>([]);
-  console.log(parcels)
 
   const [loading, setLoading] = useState(false);
 
@@ -142,19 +141,21 @@ const handleRatingSubmit = async (rating: number, feedback: string) => {
         <tbody className="text-background">
           {parcels.map(p => 
             {
-                console.log("TrackingId:", p.trackingId);
-                console.log("Has status?", p.currentStatus); // true/false দেখাবে
-                console.log("Has ratings?", p.ratings); // true/false দেখাবে
-                console.log("ReceiverToSender rating:", p.ratings?.receiverToSender?.rating ?? "No rating")
           return (
             
             <tr key={p._id} className="border-b ">
               <td className="p-2">
-                {p.receiver?.name ?
-                  <span>{p.receiver?.name}, Phone: {p.receiver?.receiverPhone}</span>
-                  :
+                {p.receiver?.name ? (
+                  <span>{p.receiver?.name}, Phone: {p.receiver?.deliveryPhone}, 
+                    {p.ratings?.receiverToSender?.rating ? (
+                      <span className="text-yellow-400 font-semibold"> R.R: {p.ratings?.receiverToSender?.rating}⭐</span>
+                    ) : (
+                      <span className="text-gray-400"></span>
+                    )}
+                  </span>
+                ) : (
                   <span>N/A</span>
-                }
+                )}
               </td>
               <td className="p-2">
                 <div className="text-xs">
