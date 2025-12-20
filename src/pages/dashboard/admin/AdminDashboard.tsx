@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tabs";
 import { UsersSection } from "./UsersSection";
 import { AdminService } from "./adminService";
+import { ParcelsSection } from "./ParcelsSection";
 
 const PAGE_LIMIT_DEFAULT = 10;
 
@@ -17,14 +18,24 @@ export const AdminDashboard = () => {
 
   // 🔹 Users state
   const [users, setUsers] = useState<any[]>([]);
-  console.log(users)
   const [usersLoading, setUsersLoading] = useState(false);
+  const [userMeta, setUserMeta] = useState(false);
 
   const [userSearch, setUserSearch] = useState("");
   const [userRole, setUserRole] = useState("ALL");
 
   const [userPage, setUserPage] = useState(1);
   const [userLimit, setUserLimit] = useState(PAGE_LIMIT_DEFAULT);
+
+    // 🔹 Parcels state
+  const [parcels, setParcels] = useState<any[]>([]);
+  const [parcelMeta, setParcelMeta] = useState<any>({ page: 1, totalPages: 1 });
+  const [parcelSearch, setParcelSearch] = useState("");
+  const [parcelPage, setParcelPage] = useState(1);
+  const [parcelLimit, setParcelLimit] = useState(PAGE_LIMIT_DEFAULT);
+  const [parcelsLoading, setParcelsLoading] = useState(false);
+
+  // const debouncedParcelSearch = useDebounce(parcelSearch, 400);
 
   // 🚀 Fetch users (only once per change)
   useEffect(() => {
@@ -33,6 +44,7 @@ export const AdminDashboard = () => {
       try {
         const response = await AdminService.getAllUsers({});
         setUsers(response.data || []);
+        setUserMeta(response.meta as any);
       } catch {
         toast.error("Failed to load users");
       } finally {
@@ -42,6 +54,24 @@ export const AdminDashboard = () => {
 
     fetchUsers();
   }, []);
+
+
+    // 🚀 Load parcels
+  useEffect(() => {
+    setParcelsLoading(true);
+    AdminService.getAllParcels({})
+      .then((response) => {
+        setParcels(response.data || []);
+        setParcelMeta(response.meta);
+      })
+      .catch(() => {
+        toast.error("Failed to load parcels");
+      })
+      .finally(() => {
+        setParcelsLoading(false);
+      });
+  }, []);
+
 
   // 🔍 Frontend filter + pagination
   const getFilteredPaginatedUsers = (
@@ -117,6 +147,7 @@ export const AdminDashboard = () => {
             users={filteredUsers}
             allUsers={users}
             meta={filteredMeta}
+            userMeta = {userMeta}
             loading={usersLoading}
             search={userSearch}
             setSearch={setUserSearch}
@@ -131,7 +162,38 @@ export const AdminDashboard = () => {
         </TabsContent>
 
         <TabsContent value="parcels">
-          <p className="text-muted-foreground">Parcel section later…</p>
+          <ParcelsSection
+            parcels={parcels}
+            meta={parcelMeta}
+            loading={parcelsLoading}
+            search={parcelSearch}
+            setSearch={setParcelSearch}
+            page={parcelPage}
+            setPage={setParcelPage}
+            limit={parcelLimit}
+            setLimit={setParcelLimit}
+            onToggleBlocked={async (id, toBlocked) => {
+              try {
+                const res = await AdminService.updateParcelBlocked(id, toBlocked);
+
+                // ✅ backend success check
+                if (res?.success) {
+                  const updatedParcel = res.data;
+                  
+
+                  setParcels((prev) =>
+                    prev.map((p) => (p._id === id ? updatedParcel : p))
+                  );
+
+                  toast.success("Parcel updated ✅");
+                }
+              } catch (err: any) {
+                toast.error(err?.response?.data?.message || "Failed to update parcel");
+              }
+            }
+          
+          }
+          />
         </TabsContent>
       </Tabs>
     </div>

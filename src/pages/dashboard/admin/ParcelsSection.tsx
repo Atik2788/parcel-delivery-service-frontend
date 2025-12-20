@@ -31,7 +31,7 @@ interface ParcelsSectionProps {
   setPage: (n: number) => void;
   limit: number;
   setLimit: (n: number) => void;
-  onToggleBlocked: (id: string, toBlocked: boolean) => Promise<void>; // 👈 এখানে টাইপ ঠিক করো
+  onToggleBlocked: (id: string, toBlocked: boolean) => Promise<void>;
 }
 
 export const ParcelsSection = ({
@@ -46,30 +46,63 @@ export const ParcelsSection = ({
   setLimit,
   onToggleBlocked,
 }: ParcelsSectionProps) => {
+
   return (
     <div className="space-y-4">
       {/* Search + Limit */}
-      <div className="flex gap-3 items-center">
-        <Input
-          placeholder="Search parcels (tracking, type, sender/receiver, status)..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Limit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="25">25</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-          </SelectContent>
-        </Select>
-        <span className="text-sm text-muted-foreground">
-          Page {meta?.page} of {meta?.totalPages}
-        </span>
-      </div>
+      <div>
+          <div className="flex gap-3 items-center">
+          <Input
+            placeholder="Search parcels (tracking, type, sender/receiver, status)..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm"
+          />
+          <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Limit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-muted-foreground">
+            Page {meta?.page} of {meta?.totalPages}
+          </span>
+        </div>
+        
+        <div className="flex flex-wrap gap-3 mt-5">
+              <Button variant="outline">
+                Total Parcels: {meta?.totalParcels}
+              </Button>
+              <Button variant="outline">
+                Approved Parcels: {meta?.approvedParcels}
+              </Button>
+              <Button variant="outline">
+                Delivered Parcels: {meta?.deliveredlParcels}
+              </Button>
+              <Button variant="outline">
+                Returned Parcels: {meta?.returnedParcels}
+              </Button>
+              <Button variant="outline">
+                Blocked Parcels: {meta?.blockedParcels}
+              </Button>
+              <Button variant="outline">
+                Cancelled Parcels: {meta?.cancelledParcels}
+              </Button>
+              
+              <Button variant="outline">
+                Processing Parcels: {meta?.processingParcels}
+              </Button>
+              <Button variant="outline">
+                Unclaimed Parcels: {meta?.unclaimedParcels}
+              </Button>
+            </div>
+
+        </div>
 
       {/* Table */}
       <div className="rounded-md border">
@@ -83,7 +116,6 @@ export const ParcelsSection = ({
               <TableHead>Weight</TableHead>
               <TableHead>Fee</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Blocked</TableHead>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -101,28 +133,36 @@ export const ParcelsSection = ({
                 </TableCell>
               </TableRow>
             ) : (
-              parcels.map((p) => (
+              parcels.filter(Boolean).map((p) => (
                 <TableRow key={p._id}>
-                  <TableCell>{p.trackingId}</TableCell>
+                  <TableCell>{p.trackingId ?? "N A"}</TableCell>
                   <TableCell>{p.type}</TableCell>
-                  <TableCell>{p.sender?.name || "—"}</TableCell>
-                  <TableCell>{p.receiver?.name || "—"}</TableCell>
+                  <TableCell>{p.sender?.name || "N A"}</TableCell>
+                  <TableCell>{p.receiver?.name || "N A"}</TableCell>
                   <TableCell>{p.weight} kg</TableCell>
                   <TableCell>৳ {p.fee}</TableCell>
                   <TableCell>{p.currentStatus}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Switch
-                        checked={!!p.isBlocked}
-                        onCheckedChange={(checked) => onToggleBlocked(p._id, checked)}
-                      />
-                      <Label className="text-sm">{p.isBlocked ? "Blocked" : "Active"}</Label>
+                      {p.currentStatus !== "DELIVERED" &&
+                        p.currentStatus !== "CANCELLED" ? (
+                        <>
+                          <Switch
+                            checked={!!p.isBlocked}
+                            onCheckedChange={(checked) =>
+                              onToggleBlocked(p._id, checked)
+                            }
+                          />
+                          <Label className="text-sm">
+                            {p.isBlocked ? "Blocked" : "Active"}
+                          </Label>
+                        </>
+                      ) : (
+                        <Label className="text-sm text-muted-foreground">
+                          
+                        </Label>
+                      )}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outline" disabled>
-                      Delete
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))

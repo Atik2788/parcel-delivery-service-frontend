@@ -37,6 +37,7 @@ interface UsersSectionProps {
   role: string;
   setRole: (v: string) => void;
   setUsers: React.Dispatch<React.SetStateAction<AdminUser[]>>;
+  userMeta: any;
 }
 
 export const UsersSection = ({
@@ -45,6 +46,7 @@ export const UsersSection = ({
   loading,
   search,
   setSearch,
+  userMeta,
   page,
   setPage,
   limit,
@@ -85,42 +87,61 @@ export const UsersSection = ({
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-3 items-center flex-wrap">
-        <Input
-          placeholder="Search users..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="">
+        <div className="flex gap-3 items-center flex-wrap">
+          <Input
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="max-w-sm"
+          />
 
-        <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Limit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="5">5</SelectItem>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="25">25</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={String(limit)} onValueChange={(v) => setLimit(Number(v))}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Limit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="25">25</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Roles</SelectItem>
-            <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
-            <SelectItem value="ADMIN">Admin</SelectItem>
-            <SelectItem value="SENDER">Sender</SelectItem>
-            <SelectItem value="RECEIVER">Receiver</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={role} onValueChange={setRole}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Roles</SelectItem>
+              <SelectItem value="SUPER_ADMIN">Super Admin</SelectItem>
+              <SelectItem value="ADMIN">Admin</SelectItem>
+              <SelectItem value="SENDER">Sender</SelectItem>
+              <SelectItem value="RECEIVER">Receiver</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <span className="text-sm text-muted-foreground">
-          Page {meta.page} of {meta.totalPages}
-        </span>
+          <span className="text-sm text-muted-foreground">
+            Page {meta.page} of {meta.totalPages}
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-3 mt-5">
+              <Button variant="outline">
+                Total Users: {userMeta?.totalUsers}
+              </Button>
+              <Button variant="outline">
+                Total Super Admins: {userMeta?.totalSuperAdmins}
+              </Button>
+              <Button variant="outline">
+                Total Admins: {userMeta?.totalAdmins}
+              </Button>
+              <Button variant="outline">
+                Total Senders: {userMeta?.totalSenders}
+              </Button>
+              <Button variant="outline">
+                Total Receivers: {userMeta?.totalReceivers}
+              </Button>
+            </div>
       </div>
 
       {/* Table */}
@@ -166,9 +187,8 @@ export const UsersSection = ({
                   <TableCell>{u.phone || "—"}</TableCell>
                   
                   <TableCell>
-                {/* শুধু Sender/Receiver হলে action দেখাবে */}
-                {u.role === "SENDER" || u.role === "RECEIVER" ? (
-                  <div className="flex gap-2">
+                  {u.role === "SENDER" || u.role === "RECEIVER" ? (
+                    <div className="flex gap-2">
                     {u.isActive === "ACTIVE" ? (
                       <button
                         onClick={() => handleToggleActive(u._id, "INACTIVE")}
