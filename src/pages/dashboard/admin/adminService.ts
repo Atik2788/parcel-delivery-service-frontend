@@ -53,7 +53,7 @@ export const AdminService = {
   
   async getAllParcels(query?: { search?: string; page?: number; limit?: number }) {
     const res = await axios.get(`${API_URL}/all-parcels`, {
-      headers: { Authorization: getToken() },
+      headers: { Authorization: getToken()},
       params: query,
     });
     return res.data as { data: AdminParcel[]; meta: PaginationMeta };
@@ -65,7 +65,7 @@ export const AdminService = {
       { isBlocked },
       { headers: { Authorization: getToken() } }
     );
-    return res.data as { data: AdminParcel };
+    return res.data as { data: AdminParcel, success: boolean };
   },
 
   async updateUser(
