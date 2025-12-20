@@ -31,6 +31,7 @@ export const AdminDashboard = () => {
   const [parcels, setParcels] = useState<any[]>([]);
   const [parcelMeta, setParcelMeta] = useState<any>({ page: 1, totalPages: 1 });
   const [parcelSearch, setParcelSearch] = useState("");
+  console.log(parcelSearch)
   const [parcelPage, setParcelPage] = useState(1);
   const [parcelLimit, setParcelLimit] = useState(PAGE_LIMIT_DEFAULT);
   const [parcelsLoading, setParcelsLoading] = useState(false);
@@ -59,7 +60,7 @@ export const AdminDashboard = () => {
     // 🚀 Load parcels
   useEffect(() => {
     setParcelsLoading(true);
-    AdminService.getAllParcels({})
+    AdminService.getAllParcels({ search: parcelSearch, page: parcelPage, limit: parcelLimit })
       .then((response) => {
         setParcels(response.data || []);
         setParcelMeta(response.meta);
@@ -70,7 +71,7 @@ export const AdminDashboard = () => {
       .finally(() => {
         setParcelsLoading(false);
       });
-  }, []);
+  }, [parcelSearch, parcelPage, parcelLimit]);
 
 
   // 🔍 Frontend filter + pagination
