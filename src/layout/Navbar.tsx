@@ -93,6 +93,7 @@ const user = useTypedSelector((state) => state.auth.user);
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+        <ModeToggle />
 
 
   {user ? (
@@ -118,7 +119,7 @@ const user = useTypedSelector((state) => state.auth.user);
           Dashboard
         </Link>
 
-      <ModeToggle />
+
 
       <Button onClick={handleLogout} className="text-sm">
         LogOut
