@@ -20,10 +20,10 @@ export const ParcelService = {
 },
 
   getIncomingParcels: async () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) throw new Error("Access token not found");
     return axios.get(`${API_URL}/incoming-parcels`, {
-      headers: { 
-        Authorization: localStorage.getItem("accessToken") || "" 
-      }
+      headers: { Authorization: token}
     }).then(res => res.data);
   },
 
