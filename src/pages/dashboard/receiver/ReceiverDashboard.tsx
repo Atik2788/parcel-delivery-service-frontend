@@ -9,6 +9,7 @@ import RatingModal from "../sender/RatingModal";
 import { ParcelService } from "./receiverService";
 import ClaimParcelModal from "./ClaimParcelModa";
 import TrackingUpdateModal from "./TrackingUpdateModal";
+import { ReceiverParcelChart } from "./ReceiverParcelChart";
 
 export const ReceiverDashboard = () => {
   const user = useSelector(
@@ -17,9 +18,11 @@ export const ReceiverDashboard = () => {
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedTrackingId, setSelectedTrackingId] = useState<string | null>(null);
-
+  
   const [parcels, setParcels] = useState<Parcel[]>([]);
+  const [parcelMeta, setParcelMeta] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  console.log(parcelMeta)
 
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimableParcels, setClaimableParcels] = useState<Parcel[]>([]);
@@ -39,6 +42,7 @@ export const ReceiverDashboard = () => {
       try {
         const response = await ParcelService.getMyParcelsReceiver();
         setParcels(response.data || []);
+        setParcelMeta(response.meta);
       } catch (err: any) {
         alert(err.message);
       } finally {
@@ -86,20 +90,7 @@ export const ReceiverDashboard = () => {
       setShowTrackingModal(true);
     };
     
-  // 🚀 Claim parcel
-  // const handleClaim = async (parcelId: string) => {
-  //   try {
-  //     await ParcelService.claimParcel(parcelId);
-  //     setParcels(prev =>
-  //       prev.map(p => (p._id === parcelId ? { ...p, currentStatus: "DISPATCHED" } : p))
-  //     );
-  //     toast.success("Parcel claimed ✅");
-  //   } catch (err: any) {
-  //     toast.error(err.message);
-  //   }
-  // };
 
-  // 🚀 Update tracking (receiver side)
     const handleTrackingSubmit = async (data: {
       trackingId: string;
       currentStatus: "IN_TRANSIT" | "DELIVERED";
@@ -144,6 +135,13 @@ export const ReceiverDashboard = () => {
     <div className="bg-chart-3">
       <div className="flex flex-col container mx-auto px-4 py-20 items-center justify-between gap-4">
         <h1 className="text-3xl text-background font-bold mb-4">Receiver Dashboard</h1>
+
+        <div className="flex justify-center">
+          <div className="w-full max-w-md ">
+            <ReceiverParcelChart meta={parcelMeta} />
+          </div>
+        </div>
+
         <button
           onClick={async () => {
             await fetchClaimableParcels();

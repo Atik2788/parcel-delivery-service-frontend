@@ -8,6 +8,8 @@ import CreateParcel from "./CreateParcel";
 import { toast } from "sonner";
 import RatingModal from "./RatingModal";
 import { ParcelService } from "./parcelService";
+import { Button } from "@/components/ui/button";
+import { SenderParcelChart } from "./SenderParcelChart";
 
 
 
@@ -18,6 +20,8 @@ const user = useSelector(
 ) as AuthUser | null;
 
 const [showCreateModal, setShowCreateModal] = useState(false);
+const [parcelMeta, setParcelMeta] = useState<any>({});
+console.log(parcelMeta)
 
 const [showRatingModal, setShowRatingModal] = useState(false);
 const [selectedTrackingId, setSelectedTrackingId] = useState<string | null>(null);
@@ -35,7 +39,8 @@ useEffect(() => {
     setLoading(true);
     try {
       const response = await ParcelService.getMyParcelsSender();
-      setParcels(response.data || []); // ✅ শুধু data array বসাও
+        setParcels(response.data || []);
+        setParcelMeta(response.meta);
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -100,14 +105,55 @@ const handleRatingSubmit = async (rating: number, feedback: string) => {
 
   return (
     <div className="bg-chart-3">
+
       <div className="flex flex-col container mx-auto  px-4 py-20 items-center justify-between gap-4">
       <h1 className="text-3xl text-background font-bold mb-4">Sender Dashboard</h1>
+
+
+      <div className="flex justify-center">
+        <div className="w-full max-w-md">
+          <SenderParcelChart meta={parcelMeta} />
+        </div>
+      </div>
+      
+
       <button
         onClick={() => setShowCreateModal(true)}
         className="bg-primary  text-background px-4 py-2 rounded self-end"
       >
         + Create Parcel
       </button>
+
+        <div className="flex flex-wrap gap-2 mt-5">
+          <Button variant="outline">
+            Total Parcels: {parcelMeta?.totalCount}
+          </Button>
+          <Button variant="outline">
+            Approved Parcels: {parcelMeta?.approvedCount}
+          </Button>
+          <Button variant="outline">
+            Delivered Parcels: {parcelMeta?.deliveredCount}
+          </Button>
+          <Button variant="outline">
+            Returned Parcels: {parcelMeta?.dispatched}
+          </Button>
+          <Button variant="outline">
+            Blocked Parcels: {parcelMeta?.inTransit}
+          </Button>
+          <Button variant="outline">
+            Cancelled Parcels: {parcelMeta?.returnedCount}
+          </Button>
+          
+          <Button variant="outline">
+            Processing Parcels: {parcelMeta?.unclaimed}
+          </Button>
+          <Button variant="outline">
+            Unclaimed Parcels: {parcelMeta?.cancelledCount}
+          </Button>
+          <Button variant="outline">
+            Unclaimed Parcels: {parcelMeta?.blockedCount}
+          </Button>
+      </div>
 
       {parcels.length === 0 ? (
   <div className="flex flex-col items-center justify-center w-full py-20 text-xl text-gray-500">

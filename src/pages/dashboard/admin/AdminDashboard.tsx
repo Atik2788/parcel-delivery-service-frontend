@@ -77,9 +77,6 @@ export const AdminDashboard = () => {
   }, []);
 
 
-
-
-
     // 🚀 Load parcels
   useEffect(() => {
     setParcelsLoading(true);

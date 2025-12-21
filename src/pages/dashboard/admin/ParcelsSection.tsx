@@ -110,7 +110,7 @@ export const ParcelsSection = ({
               <Button variant="outline">
                 Unclaimed Parcels: {meta?.unclaimedParcels}
               </Button>
-            </div>
+          </div>
 
         </div>
 
