@@ -38,6 +38,26 @@ export const AdminDashboard = () => {
 
   // const debouncedParcelSearch = useDebounce(parcelSearch, 400);
 
+
+    // userMeta
+  const userMeta2 = {
+    totalUsers: users.length,
+    senderCount: users.filter((u) => u.role === "SENDER").length,
+    receiverCount: users.filter((u) => u.role === "RECEIVER").length,
+    adminCount: users.filter((u) => u.role === "ADMIN").length,
+    superAdminCount: users.filter((u) => u.role === "SUPER_ADMIN").length,
+  };
+
+  // parcelMeta backend 
+  const parcelMeta2 = {
+    totalParcels: parcelMeta.totalParcels,
+    deliveredParcels: parcelMeta.deliveredParcels,
+    pendingParcels: parcelMeta.approvedParcels,
+    blockedParcels: parcelMeta.blockedParcels,
+    inTransitParcels: parcelMeta.processingParcels,
+    cancelledParcels: parcelMeta.cancelledParcels,
+  };
+
   // 🚀 Fetch users (only once per change)
   useEffect(() => {
     const fetchUsers = async () => {
@@ -55,6 +75,9 @@ export const AdminDashboard = () => {
 
     fetchUsers();
   }, []);
+
+
+
 
 
     // 🚀 Load parcels
@@ -146,6 +169,7 @@ export const AdminDashboard = () => {
         <TabsContent value="users">
           <UsersSection
             users={filteredUsers}
+            userMeta2 = {userMeta2}
             allUsers={users}
             meta={filteredMeta}
             userMeta = {userMeta}
@@ -166,6 +190,7 @@ export const AdminDashboard = () => {
           <ParcelsSection
             parcels={parcels}
             meta={parcelMeta}
+            parcelMeta2={parcelMeta2}
             loading={parcelsLoading}
             search={parcelSearch}
             setSearch={setParcelSearch}

@@ -20,6 +20,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import type { AdminParcel } from "./adminService";
+import { ParcelChart } from "./ParcelChart";
 
 interface ParcelsSectionProps {
   parcels: AdminParcel[];
@@ -27,6 +28,7 @@ interface ParcelsSectionProps {
   loading: boolean;
   search: string;
   setSearch: (v: string) => void;
+  parcelMeta2: any
   page: number;
   setPage: (n: number) => void;
   limit: number;
@@ -38,6 +40,7 @@ export const ParcelsSection = ({
   parcels,
   meta,
   loading,
+  parcelMeta2,
   search,
   setSearch,
   page,
@@ -49,6 +52,13 @@ export const ParcelsSection = ({
 
   return (
     <div className="space-y-4">
+
+<div className="mb-16 flex justify-center">
+  <div className="w-full max-w-md h-96">
+    <ParcelChart meta={parcelMeta2} />
+  </div>
+</div>
+
       {/* Search + Limit */}
       <div>
           <div className="flex gap-3 items-center">

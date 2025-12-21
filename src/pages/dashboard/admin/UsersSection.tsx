@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { AdminService, type AdminUser } from "./adminService";
 import { toast } from "sonner";
+import { UserChart } from "./UserChart";
 
 interface UsersSectionProps {
   users: AdminUser[];
@@ -30,6 +31,7 @@ interface UsersSectionProps {
   loading: boolean;
   search: string;
   setSearch: (v: string) => void;
+  userMeta2: any;
   page: number;
   setPage: (n: number) => void;
   limit: number;
@@ -46,6 +48,7 @@ export const UsersSection = ({
   loading,
   search,
   setSearch,
+  userMeta2,
   userMeta,
   page,
   setPage,
@@ -86,6 +89,11 @@ export const UsersSection = ({
 
   return (
     <div className="space-y-4">
+
+      <div className="mb-16">
+          <UserChart meta={userMeta2} />
+      </div>
+
       {/* Filters */}
       <div className="">
         <div className="flex gap-3 items-center flex-wrap">

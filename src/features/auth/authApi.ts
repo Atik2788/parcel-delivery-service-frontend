@@ -1,5 +1,5 @@
 import { baseApi } from "@/features/api/baseApi";
-import { setCredentials } from "./authSlice";
+import { setCredentials, type User, type UserRole } from "./authSlice";
 
 export interface RefreshResponse {
   success: boolean;
@@ -31,6 +31,25 @@ export interface RegisterResponse {
   accessToken: string;
   refreshToken: string;
 }
+
+
+interface ApiUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  role: string; // raw string from backend
+}
+
+const mapUser = (user: ApiUser): User => {
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role as UserRole, // 👈 controlled cast
+  };
+};
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -97,7 +116,7 @@ export const authApi = baseApi.injectEndpoints({
           // Redux state update
           dispatch(
             setCredentials({
-              user: data.user,
+              user: mapUser(data.user),
               accessToken: data.accessToken,
             })
           );
